@@ -1,0 +1,34 @@
+
+# Secrets et variables d'environnement
+.env
+.env.*
+!.env.example
+
+# .NET / C#
+**/bin/
+**/obj/
+**/Properties/launchSettings.json
+**/TestResults/
+*.user
+*.suo
+
+# Node.js / Next.js
+**/node_modules/
+**/.next/
+**/out/
+**/coverage/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# Système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Fichiers temporaires
+*.log
