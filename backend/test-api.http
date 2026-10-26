@@ -1,0 +1,7 @@
+
+
+PUT http://localhost:5000/api/anneesacademiques/2/activation
+
+
+### Vérifier son statut
+GET http://localhost:5000/api/anneesacademiques
