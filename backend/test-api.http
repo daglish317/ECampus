@@ -5,3 +5,43 @@ PUT http://localhost:5000/api/anneesacademiques/2/activation
 
 ### Vérifier son statut
 GET http://localhost:5000/api/anneesacademiques
+
+###
+GET http://localhost:5000/api/
+
+###
+POST http://localhost:5000/api/semestres
+Content-Type: application/json
+
+{
+  "nom": "Semestre 1",
+  "dateDebut": "2026-08-01",
+  "dateFin": "2027-01-31",
+  "anneeAcademiqueId": 11
+}
+
+###
+GET http://localhost:5000/api/semestres
+
+
+
+### Consulter le semestre existant
+GET http://localhost:5000/api/semestres/2
+
+### Consulter un semestre inexistant
+GET http://localhost:5000/api/semestres/9999
+
+
+### Modifier le semestre 2
+PUT http://localhost:5000/api/semestres/2
+Content-Type: application/json
+
+{
+  "nom": "Semestre 1 - Modifié",
+  "dateDebut": "2026-09-15",
+  "dateFin": "2027-01-31"
+}
+
+
+
+
