@@ -35,12 +35,49 @@ GET http://localhost:5000/api/semestres/9999
 ### Modifier le semestre 2
 PUT http://localhost:5000/api/semestres/2
 Content-Type: application/json
-
 {
   "nom": "Semestre 1 - Modifié",
   "dateDebut": "2026-09-15",
   "dateFin": "2027-01-31"
 }
+
+####
+POST http://localhost:5000/api/niveaux
+Content-Type: application/json
+
+{
+  "nom": "Licence 1",
+  "description": "Première année de licence"
+}
+
+###
+
+### Niveau existant
+GET http://localhost:5000/api/niveaux/1
+
+### Niveau inexistant
+GET http://localhost:5000/api/niveaux/9999
+
+
+### Créer une classe
+POST http://localhost:5000/api/classes
+Content-Type: application/json
+
+{
+  "nom": "Informatique A",
+  "niveauId": 1
+}
+
+### Lister les classes
+GET http://localhost:5000/api/classes
+
+### Consulter une classe existante
+GET http://localhost:5000/api/classes/1
+
+### Consulter une classe inexistante
+GET http://localhost:5000/api/classes/9999
+
+
 
 
 
