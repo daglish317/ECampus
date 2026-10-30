@@ -77,8 +77,11 @@ GET http://localhost:5000/api/classes/1
 ### Consulter une classe inexistante
 GET http://localhost:5000/api/classes/9999
 
+### Créer un nouvel etudiant
+POST http://localhost:5000/api/etudiants
 
-
-
-
-
+{
+  "nom": "Dupont",
+  "prenom": "Jean",
+  "email": "jean.dupont@example.com"
+}

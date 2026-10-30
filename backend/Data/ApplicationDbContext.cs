@@ -118,13 +118,6 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(i => i.EtudiantId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        
-        modelBuilder.Entity<InscriptionAcademique>()
-            .HasOne(i => i.Etudiant)
-            .WithMany()
-            .HasForeignKey(i => i.EtudiantId)
-            .OnDelete(DeleteBehavior.Restrict);
-
 
         // Une association de programme référence ses quatre éléments.
         modelBuilder.Entity<ProgrammeAcademique>()
