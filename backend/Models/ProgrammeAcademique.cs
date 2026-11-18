@@ -6,6 +6,10 @@ public class ProgrammeAcademique
 
     public int MatiereId { get; set; }
 
+    public DateTime DateEffet { get; set; }
+
+    public DateTime? DateFinEffet { get; set; }
+
     public int NiveauId { get; set; }
 
     public int AnneeAcademiqueId { get; set; }

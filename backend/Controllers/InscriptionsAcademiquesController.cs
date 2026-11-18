@@ -103,4 +103,143 @@ public class InscriptionsAcademiquesController : ControllerBase
             anneeAcademiqueId = inscription.AnneeAcademiqueId
         });
     }
+
+    [HttpGet]
+public async Task<IActionResult> GetAll()
+{
+    var inscriptions = await _context.InscriptionsAcademiques
+        .AsNoTracking()
+        .Include(i => i.Etudiant)
+            .ThenInclude(e => e!.Utilisateur)
+        .Include(i => i.Classe)
+        .Include(i => i.AnneeAcademique)
+        .Select(i => new InscriptionAcademiqueResponseDto
+        {
+            Id = i.Id,
+
+            EtudiantId = i.EtudiantId,
+            NomEtudiant = i.Etudiant!.Utilisateur!.Nom,
+            PrenomEtudiant = i.Etudiant.Utilisateur.Prenom,
+            EmailEtudiant = i.Etudiant.Utilisateur.Email,
+
+            ClasseId = i.ClasseId,
+            NomClasse = i.Classe!.Nom,
+
+            AnneeAcademiqueId = i.AnneeAcademiqueId,
+            NomAnneeAcademique = i.AnneeAcademique!.Nom
+        })
+        .ToListAsync();
+
+    return Ok(inscriptions);
+}
+
+[HttpGet("etudiant/{etudiantId}")]
+public async Task<IActionResult> GetByEtudiant(int etudiantId)
+{
+    var inscriptions = await _context.InscriptionsAcademiques
+        .AsNoTracking()
+        .Where(i => i.EtudiantId == etudiantId)
+        .Include(i => i.Etudiant)
+            .ThenInclude(e => e!.Utilisateur)
+        .Include(i => i.Classe)
+        .Include(i => i.AnneeAcademique)
+        .Select(i => new InscriptionAcademiqueResponseDto
+        {
+            Id = i.Id,
+
+            EtudiantId = i.EtudiantId,
+            NomEtudiant = i.Etudiant!.Utilisateur!.Nom,
+            PrenomEtudiant = i.Etudiant.Utilisateur.Prenom,
+            EmailEtudiant = i.Etudiant.Utilisateur.Email,
+
+            ClasseId = i.ClasseId,
+            NomClasse = i.Classe!.Nom,
+
+            AnneeAcademiqueId = i.AnneeAcademiqueId,
+            NomAnneeAcademique = i.AnneeAcademique!.Nom
+        })
+        .ToListAsync();
+
+    if (!inscriptions.Any())
+    {
+        return NotFound(
+            $"Aucune inscription trouvée pour l'étudiant {etudiantId}."
+        );
+    }
+
+    return Ok(inscriptions);
+}
+
+[HttpPut("{id}")]
+public async Task<IActionResult> Modifier(
+    int id,
+    ModifierInscriptionAcademiqueDto dto)
+{
+    // 1. Vérifier si l'inscription existe
+    var inscription = await _context.InscriptionsAcademiques
+        .FirstOrDefaultAsync(i => i.Id == id);
+
+    if (inscription == null)
+    {
+        return NotFound($"Inscription {id} introuvable.");
+    }
+
+    // 2. Vérifier si la classe existe
+    var classeExiste = await _context.Classes
+        .AnyAsync(c => c.Id == dto.ClasseId);
+
+    if (!classeExiste)
+    {
+        return NotFound($"Classe {dto.ClasseId} introuvable.");
+    }
+
+    // 3. Vérifier si l'année académique existe
+    var anneeAcademique = await _context.AnneesAcademiques
+        .FirstOrDefaultAsync(a => a.Id == dto.AnneeAcademiqueId);
+
+    if (anneeAcademique == null)
+    {
+        return NotFound(
+            $"Année académique {dto.AnneeAcademiqueId} introuvable."
+        );
+    }
+
+    // 4. Vérifier si l'année est active
+    if (!anneeAcademique.EstActive)
+    {
+        return BadRequest(
+            "Impossible de modifier l'inscription vers une année inactive."
+        );
+    }
+
+    // 5. Vérifier les doublons
+    var doublon = await _context.InscriptionsAcademiques
+        .AnyAsync(i =>
+            i.EtudiantId == inscription.EtudiantId &&
+            i.AnneeAcademiqueId == dto.AnneeAcademiqueId &&
+            i.Id != id);
+
+    if (doublon)
+    {
+        return Conflict(
+            "Cet étudiant possède déjà une inscription pour cette année académique."
+        );
+    }
+
+    // 6. Modifier l'inscription
+    inscription.ClasseId = dto.ClasseId;
+    inscription.AnneeAcademiqueId = dto.AnneeAcademiqueId;
+
+    // 7. Enregistrer les changements
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "Inscription académique modifiée avec succès.",
+        inscriptionId = inscription.Id,
+        classeId = inscription.ClasseId,
+        anneeAcademiqueId = inscription.AnneeAcademiqueId
+    });
+}
+
 }

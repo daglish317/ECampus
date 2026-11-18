@@ -145,15 +145,18 @@ public class ApplicationDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         
+        
         modelBuilder.Entity<ProgrammeAcademique>()
             .HasIndex(p => new
             {
                 p.MatiereId,
                 p.NiveauId,
                 p.AnneeAcademiqueId,
-                p.SemestreId
+                p.SemestreId,
+                p.DateEffet
             })
             .IsUnique();
+
 
         
         // Un compte utilisateur ne peut être lié

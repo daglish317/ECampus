@@ -204,6 +204,12 @@ namespace Backend.Migrations
                     b.Property<int>("AnneeAcademiqueId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("DateEffet")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DateFinEffet")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("MatiereId")
                         .HasColumnType("INTEGER");
 
@@ -221,7 +227,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("SemestreId");
 
-                    b.HasIndex("MatiereId", "NiveauId", "AnneeAcademiqueId", "SemestreId")
+                    b.HasIndex("MatiereId", "NiveauId", "AnneeAcademiqueId", "SemestreId", "DateEffet")
                         .IsUnique();
 
                     b.ToTable("ProgrammesAcademiques");
