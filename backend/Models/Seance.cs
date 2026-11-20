@@ -1,3 +1,4 @@
+using Backend.Models.ETextBook;
 
 namespace Backend.Models;
 
@@ -22,4 +23,6 @@ public class Seance
     public int? ProgrammeHebdomadaireId { get; set; }
 
     public ProgrammeHebdomadaire? ProgrammeHebdomadaire { get; set; }
+
+    public EntreeCahier? EntreeCahier { get; set; }
 }

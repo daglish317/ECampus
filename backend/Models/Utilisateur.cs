@@ -1,3 +1,5 @@
+using Backend.Models.ETextBook;
+
 namespace Backend.Models;
 
 public class Utilisateur
@@ -15,4 +17,6 @@ public class Utilisateur
 
     // Rôle applicatif dans eCampus
     public string Role { get; set; } = string.Empty;
+
+    public ICollection<DecisionCahier> DecisionsCahier { get; set; } = new List<DecisionCahier>();
 }

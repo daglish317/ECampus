@@ -101,6 +101,106 @@ namespace Backend.Migrations
                     b.ToTable("Classes");
                 });
 
+            modelBuilder.Entity("Backend.Models.ETextBook.CahierTexte", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Actif")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateCreation")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ProgrammeAcademiqueId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProgrammeAcademiqueId")
+                        .IsUnique();
+
+                    b.ToTable("CahiersTexte");
+                });
+
+            modelBuilder.Entity("Backend.Models.ETextBook.DecisionCahier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Commentaire")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateDecision")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Decision")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EntreeCahierId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UtilisateurId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntreeCahierId");
+
+                    b.HasIndex("UtilisateurId");
+
+                    b.ToTable("DecisionsCahier");
+                });
+
+            modelBuilder.Entity("Backend.Models.ETextBook.EntreeCahier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ActivitesPrevues")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ActivitesRealisees")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CahierTexteId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContenuEnseigne")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DateSoumission")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("EnseignantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SeanceId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Statut")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CahierTexteId");
+
+                    b.HasIndex("EnseignantId");
+
+                    b.HasIndex("SeanceId")
+                        .IsUnique();
+
+                    b.ToTable("EntreesCahier");
+                });
+
             modelBuilder.Entity("Backend.Models.Enseignant", b =>
                 {
                     b.Property<int>("Id")
@@ -389,6 +489,63 @@ namespace Backend.Migrations
                     b.Navigation("Niveau");
                 });
 
+            modelBuilder.Entity("Backend.Models.ETextBook.CahierTexte", b =>
+                {
+                    b.HasOne("Backend.Models.ProgrammeAcademique", "ProgrammeAcademique")
+                        .WithMany("CahiersTexte")
+                        .HasForeignKey("ProgrammeAcademiqueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ProgrammeAcademique");
+                });
+
+            modelBuilder.Entity("Backend.Models.ETextBook.DecisionCahier", b =>
+                {
+                    b.HasOne("Backend.Models.ETextBook.EntreeCahier", "EntreeCahier")
+                        .WithMany("Decisions")
+                        .HasForeignKey("EntreeCahierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Utilisateur", "Utilisateur")
+                        .WithMany("DecisionsCahier")
+                        .HasForeignKey("UtilisateurId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EntreeCahier");
+
+                    b.Navigation("Utilisateur");
+                });
+
+            modelBuilder.Entity("Backend.Models.ETextBook.EntreeCahier", b =>
+                {
+                    b.HasOne("Backend.Models.ETextBook.CahierTexte", "CahierTexte")
+                        .WithMany("Entrees")
+                        .HasForeignKey("CahierTexteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Enseignant", "Enseignant")
+                        .WithMany("EntreesCahier")
+                        .HasForeignKey("EnseignantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Seance", "Seance")
+                        .WithOne("EntreeCahier")
+                        .HasForeignKey("Backend.Models.ETextBook.EntreeCahier", "SeanceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CahierTexte");
+
+                    b.Navigation("Enseignant");
+
+                    b.Navigation("Seance");
+                });
+
             modelBuilder.Entity("Backend.Models.Enseignant", b =>
                 {
                     b.HasOne("Backend.Models.Utilisateur", "Utilisateur")
@@ -526,6 +683,21 @@ namespace Backend.Migrations
                     b.Navigation("Inscriptions");
                 });
 
+            modelBuilder.Entity("Backend.Models.ETextBook.CahierTexte", b =>
+                {
+                    b.Navigation("Entrees");
+                });
+
+            modelBuilder.Entity("Backend.Models.ETextBook.EntreeCahier", b =>
+                {
+                    b.Navigation("Decisions");
+                });
+
+            modelBuilder.Entity("Backend.Models.Enseignant", b =>
+                {
+                    b.Navigation("EntreesCahier");
+                });
+
             modelBuilder.Entity("Backend.Models.Matiere", b =>
                 {
                     b.Navigation("Programmes");
@@ -534,6 +706,21 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Niveau", b =>
                 {
                     b.Navigation("Classes");
+                });
+
+            modelBuilder.Entity("Backend.Models.ProgrammeAcademique", b =>
+                {
+                    b.Navigation("CahiersTexte");
+                });
+
+            modelBuilder.Entity("Backend.Models.Seance", b =>
+                {
+                    b.Navigation("EntreeCahier");
+                });
+
+            modelBuilder.Entity("Backend.Models.Utilisateur", b =>
+                {
+                    b.Navigation("DecisionsCahier");
                 });
 #pragma warning restore 612, 618
         }
