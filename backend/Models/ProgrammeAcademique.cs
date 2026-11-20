@@ -1,3 +1,5 @@
+using Backend.Models.ETextBook;
+
 namespace Backend.Models;
 
 public class ProgrammeAcademique
@@ -23,4 +25,6 @@ public class ProgrammeAcademique
     public AnneeAcademique? AnneeAcademique { get; set; }
 
     public Semestre? Semestre { get; set; }
+
+    public ICollection<CahierTexte> CahiersTexte { get; set; } = new List<CahierTexte>();
 }

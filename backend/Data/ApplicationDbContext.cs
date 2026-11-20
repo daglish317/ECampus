@@ -1,4 +1,5 @@
 using Backend.Models;
+using Backend.Models.ETextBook; 
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Data;
@@ -49,6 +50,13 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<ProgrammeHebdomadaire> ProgrammesHebdomadaires
         => Set<ProgrammeHebdomadaire>();
+
+    // ==========================================
+    // e-TEXTBOOK (EF07, EF09, EF10)
+    // ==========================================
+    public DbSet<CahierTexte> CahiersTexte => Set<CahierTexte>();
+    public DbSet<EntreeCahier> EntreesCahier => Set<EntreeCahier>();
+    public DbSet<DecisionCahier> DecisionsCahier => Set<DecisionCahier>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -256,7 +264,78 @@ public class ApplicationDbContext : DbContext
             .WithMany()
             .HasForeignKey(p => p.AnneeAcademiqueId)
             .OnDelete(DeleteBehavior.Restrict);
+ 
 
+
+        // ==========================================
+       // e-TEXTBOOK (EF07, EF09, EF10)
+       // ==========================================
+
+// RG07.2 : Un seul cahier de texte par programme académique
+modelBuilder.Entity<CahierTexte>()
+    .HasOne(c => c.ProgrammeAcademique)
+    .WithMany(p => p.CahiersTexte)
+    .HasForeignKey(c => c.ProgrammeAcademiqueId)
+    .OnDelete(DeleteBehavior.Restrict); // RG07.6 (Pas de suppression en cascade)
+
+modelBuilder.Entity<CahierTexte>()
+    .HasIndex(c => c.ProgrammeAcademiqueId)
+    .IsUnique();
+
+// RG07.3 : Une seule entrée de cahier par séance
+modelBuilder.Entity<EntreeCahier>()
+    .HasOne(e => e.CahierTexte)
+    .WithMany(c => c.Entrees)
+    .HasForeignKey(e => e.CahierTexteId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+modelBuilder.Entity<EntreeCahier>()
+    .HasOne(e => e.Seance)
+    .WithOne(s => s.EntreeCahier)
+    .HasForeignKey<EntreeCahier>(e => e.SeanceId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+modelBuilder.Entity<EntreeCahier>()
+    .HasIndex(e => e.SeanceId)
+    .IsUnique();
+
+// RG07.5 : Le remplacement d'un enseignant ne supprime pas les entrées
+modelBuilder.Entity<EntreeCahier>()
+    .HasOne(e => e.Enseignant)
+    .WithMany(en => en.EntreesCahier)
+    .HasForeignKey(e => e.EnseignantId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+// RG09.2 : Le contenu enseigné est obligatoire
+modelBuilder.Entity<EntreeCahier>()
+    .Property(e => e.ContenuEnseigne)
+    .IsRequired()
+    .HasMaxLength(2000);
+
+modelBuilder.Entity<EntreeCahier>()
+    .Property(e => e.ActivitesRealisees)
+    .HasMaxLength(2000);
+
+modelBuilder.Entity<EntreeCahier>()
+    .Property(e => e.ActivitesPrevues)
+    .HasMaxLength(2000);
+
+// Historique des décisions (EF10)
+modelBuilder.Entity<DecisionCahier>()
+    .HasOne(d => d.EntreeCahier)
+    .WithMany(e => e.Decisions)
+    .HasForeignKey(d => d.EntreeCahierId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+modelBuilder.Entity<DecisionCahier>()
+    .HasOne(d => d.Utilisateur)
+    .WithMany(u => u.DecisionsCahier)
+    .HasForeignKey(d => d.UtilisateurId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+modelBuilder.Entity<DecisionCahier>()
+    .Property(d => d.Commentaire)
+    .HasMaxLength(2000);
 
     }
 }
