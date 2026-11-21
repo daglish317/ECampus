@@ -211,24 +211,15 @@ public class ApplicationDbContext : DbContext
                     "\"DateFin\" IS NULL OR \"DateFin\" >= \"DateDebut\""
                 ));
 
-
-        
-        modelBuilder.Entity<Seance>()
-            .HasOne(s => s.ProgrammeAcademique)
-            .WithMany()
-            .HasForeignKey(s => s.ProgrammeAcademiqueId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         modelBuilder.Entity<Seance>()
             .HasOne(s => s.AffectationEnseignant)
             .WithMany()
             .HasForeignKey(s => s.AffectationEnseignantId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        
         modelBuilder.Entity<Seance>()
             .HasOne(s => s.ProgrammeHebdomadaire)
-            .WithMany()
+            .WithMany(p => p.Seances)
             .HasForeignKey(s => s.ProgrammeHebdomadaireId)
             .OnDelete(DeleteBehavior.Restrict);
 
@@ -257,6 +248,45 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(p => p.AnneeAcademiqueId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<ProgrammeHebdomadaire>()
+            .HasOne(p => p.Classe)
+            .WithMany(c => c.ProgrammesHebdomadaires)
+            .HasForeignKey(p => p.ClasseId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        // Une version de programme peut succéder à une version précédente.
+        modelBuilder.Entity<ProgrammeHebdomadaire>()
+        .HasOne(p => p.ProgrammePrecedent)
+        .WithOne(p => p.VersionSuivante)
+        .HasForeignKey<ProgrammeHebdomadaire>(p => p.ProgrammePrecedentId)
+        .OnDelete(DeleteBehavior.Restrict);
+        
+        // Un numéro de version doit être unique pour une classe, une année et une semaine données.
+        modelBuilder.Entity<ProgrammeHebdomadaire>()
+            .HasIndex(p => new
+            {
+                p.ClasseId,
+                p.AnneeAcademiqueId,
+                p.DateDebutSemaine,
+                p.NumeroVersion
+            })
+            .IsUnique();
 
+        /* Une seule version publiée par classe,
+         année académique et semaine.*/
+        modelBuilder.Entity<ProgrammeHebdomadaire>()
+            .HasIndex(p => new
+            {
+                p.ClasseId,
+                p.AnneeAcademiqueId,
+                p.DateDebutSemaine
+            })
+            .IsUnique()
+            .HasFilter("\"Statut\" = 'Publie'");
+
+        modelBuilder.Entity<ProgrammeHebdomadaire>()
+        .HasIndex(p => p.ProgrammePrecedentId)
+        .IsUnique()
+        .HasFilter("\"ProgrammePrecedentId\" IS NOT NULL");
     }
 }

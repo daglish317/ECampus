@@ -13,13 +13,10 @@ public class Seance
 
     public string Salle { get; set; } = string.Empty;
 
-    public int ProgrammeAcademiqueId { get; set; }
-    public ProgrammeAcademique? ProgrammeAcademique { get; set; }
-
     public int AffectationEnseignantId { get; set; }
     public AffectationEnseignant? AffectationEnseignant { get; set; }
 
-    public int? ProgrammeHebdomadaireId { get; set; }
+    public int ProgrammeHebdomadaireId { get; set; }
 
     public ProgrammeHebdomadaire? ProgrammeHebdomadaire { get; set; }
 }

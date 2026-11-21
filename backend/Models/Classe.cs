@@ -12,4 +12,7 @@ public class Classe
 
     public ICollection<InscriptionAcademique> Inscriptions { get; set; }
         = new List<InscriptionAcademique>();
+
+    public ICollection<ProgrammeHebdomadaire> ProgrammesHebdomadaires { get; set; }
+    = new List<ProgrammeHebdomadaire>();
 }
