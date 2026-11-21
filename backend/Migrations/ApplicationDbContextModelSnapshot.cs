@@ -41,7 +41,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("ProgrammeAcademiqueId");
 
-                    b.ToTable("AffectationsEnseignants", t =>
+                    b.ToTable("AffectationsEnseignants", null, t =>
                         {
                             t.HasCheckConstraint("CK_AffectationEnseignant_Dates", "\"DateFin\" IS NULL OR \"DateFin\" >= \"DateDebut\"");
                         });
@@ -75,7 +75,7 @@ namespace Backend.Migrations
                     b.HasIndex("Nom")
                         .IsUnique();
 
-                    b.ToTable("AnneesAcademiques", t =>
+                    b.ToTable("AnneesAcademiques", null, t =>
                         {
                             t.HasCheckConstraint("CK_AnneeAcademique_Dates", "\"DateFin\" >= \"DateDebut\"");
                         });
@@ -98,7 +98,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("NiveauId");
 
-                    b.ToTable("Classes");
+                    b.ToTable("Classes", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.ETextBook.CahierTexte", b =>
@@ -215,7 +215,7 @@ namespace Backend.Migrations
                     b.HasIndex("UtilisateurId")
                         .IsUnique();
 
-                    b.ToTable("Enseignants");
+                    b.ToTable("Enseignants", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Etudiant", b =>
@@ -232,7 +232,7 @@ namespace Backend.Migrations
                     b.HasIndex("UtilisateurId")
                         .IsUnique();
 
-                    b.ToTable("Etudiants");
+                    b.ToTable("Etudiants", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.InscriptionAcademique", b =>
@@ -259,7 +259,7 @@ namespace Backend.Migrations
                     b.HasIndex("EtudiantId", "AnneeAcademiqueId")
                         .IsUnique();
 
-                    b.ToTable("InscriptionsAcademiques");
+                    b.ToTable("InscriptionsAcademiques", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Matiere", b =>
@@ -274,7 +274,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Matieres");
+                    b.ToTable("Matieres", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Niveau", b =>
@@ -292,7 +292,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Niveaux");
+                    b.ToTable("Niveaux", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.ProgrammeAcademique", b =>
@@ -330,7 +330,7 @@ namespace Backend.Migrations
                     b.HasIndex("MatiereId", "NiveauId", "AnneeAcademiqueId", "SemestreId", "DateEffet")
                         .IsUnique();
 
-                    b.ToTable("ProgrammesAcademiques");
+                    b.ToTable("ProgrammesAcademiques", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.ProgrammeHebdomadaire", b =>
@@ -342,12 +342,27 @@ namespace Backend.Migrations
                     b.Property<int>("AnneeAcademiqueId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ClasseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("DateDebutSemaine")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DateImportation")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DatePublication")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NomFichier")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("NumeroVersion")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ProgrammePrecedentId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Statut")
                         .IsRequired()
@@ -357,7 +372,18 @@ namespace Backend.Migrations
 
                     b.HasIndex("AnneeAcademiqueId");
 
-                    b.ToTable("ProgrammesHebdomadaires");
+                    b.HasIndex("ProgrammePrecedentId")
+                        .IsUnique()
+                        .HasFilter("\"ProgrammePrecedentId\" IS NOT NULL");
+
+                    b.HasIndex("ClasseId", "AnneeAcademiqueId", "DateDebutSemaine")
+                        .IsUnique()
+                        .HasFilter("\"Statut\" = 'Publie'");
+
+                    b.HasIndex("ClasseId", "AnneeAcademiqueId", "DateDebutSemaine", "NumeroVersion")
+                        .IsUnique();
+
+                    b.ToTable("ProgrammesHebdomadaires", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Seance", b =>
@@ -378,10 +404,7 @@ namespace Backend.Migrations
                     b.Property<TimeOnly>("HeureDebut")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProgrammeAcademiqueId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ProgrammeHebdomadaireId")
+                    b.Property<int>("ProgrammeHebdomadaireId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Salle")
@@ -392,11 +415,9 @@ namespace Backend.Migrations
 
                     b.HasIndex("AffectationEnseignantId");
 
-                    b.HasIndex("ProgrammeAcademiqueId");
-
                     b.HasIndex("ProgrammeHebdomadaireId");
 
-                    b.ToTable("Seances", t =>
+                    b.ToTable("Seances", null, t =>
                         {
                             t.HasCheckConstraint("CK_Seance_DureePositive", "\"DureeMinutes\" > 0");
                         });
@@ -425,7 +446,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("AnneeAcademiqueId");
 
-                    b.ToTable("Semestres", t =>
+                    b.ToTable("Semestres", null, t =>
                         {
                             t.HasCheckConstraint("CK_Semestre_Dates", "\"DateFin\" >= \"DateDebut\"");
                         });
@@ -462,7 +483,7 @@ namespace Backend.Migrations
                     b.HasIndex("ClerkUserId")
                         .IsUnique();
 
-                    b.ToTable("Utilisateurs");
+                    b.ToTable("Utilisateurs", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.AffectationEnseignant", b =>
@@ -644,7 +665,22 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Backend.Models.Classe", "Classe")
+                        .WithMany("ProgrammesHebdomadaires")
+                        .HasForeignKey("ClasseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.ProgrammeHebdomadaire", "ProgrammePrecedent")
+                        .WithMany("VersionsSuivantes")
+                        .HasForeignKey("ProgrammePrecedentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("AnneeAcademique");
+
+                    b.Navigation("Classe");
+
+                    b.Navigation("ProgrammePrecedent");
                 });
 
             modelBuilder.Entity("Backend.Models.Seance", b =>
@@ -655,20 +691,13 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Backend.Models.ProgrammeAcademique", "ProgrammeAcademique")
-                        .WithMany()
-                        .HasForeignKey("ProgrammeAcademiqueId")
+                    b.HasOne("Backend.Models.ProgrammeHebdomadaire", "ProgrammeHebdomadaire")
+                        .WithMany("Seances")
+                        .HasForeignKey("ProgrammeHebdomadaireId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Backend.Models.ProgrammeHebdomadaire", "ProgrammeHebdomadaire")
-                        .WithMany()
-                        .HasForeignKey("ProgrammeHebdomadaireId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("AffectationEnseignant");
-
-                    b.Navigation("ProgrammeAcademique");
 
                     b.Navigation("ProgrammeHebdomadaire");
                 });
@@ -687,6 +716,8 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Classe", b =>
                 {
                     b.Navigation("Inscriptions");
+
+                    b.Navigation("ProgrammesHebdomadaires");
                 });
 
             modelBuilder.Entity("Backend.Models.ETextBook.CahierTexte", b =>
@@ -714,6 +745,7 @@ namespace Backend.Migrations
                     b.Navigation("Classes");
                 });
 
+<<<<<<< HEAD
             modelBuilder.Entity("Backend.Models.ProgrammeAcademique", b =>
                 {
                     b.Navigation("CahiersTexte");
@@ -727,6 +759,13 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Utilisateur", b =>
                 {
                     b.Navigation("DecisionsCahier");
+=======
+            modelBuilder.Entity("Backend.Models.ProgrammeHebdomadaire", b =>
+                {
+                    b.Navigation("Seances");
+
+                    b.Navigation("VersionsSuivantes");
+>>>>>>> 73966d6e7fcb6e41fe7e4a2c14da1677bc2c8aa6
                 });
 #pragma warning restore 612, 618
         }

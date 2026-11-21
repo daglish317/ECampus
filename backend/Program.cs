@@ -1,4 +1,5 @@
 using Backend.Data;
+using Backend.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Backend.Services.ETextBook;
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 // Enregistrement du service e-TextBook (Injection de dépendances)
 builder.Services.AddScoped<ICahierTexteService, CahierTexteService>();
+
+builder.Services.AddScoped<ProgrammeHebdomadaireService>();
 
 // Services OpenAPI
 builder.Services.AddOpenApi();
